@@ -56,5 +56,12 @@ services:
       keycloak:
         condition: service_healthy
 
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
 volumes:
   pgdata:

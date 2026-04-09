@@ -22,7 +22,8 @@
       "serviceAccountsEnabled": false,
       "implicitFlowEnabled": false,
       "redirectUris": [
-        "oauth2appdemo://callback"
+        "oauth2appdemo://callback",
+        "http://localhost:5173/callback"
       ],
       "webOrigins": ["*"],
       "protocol": "openid-connect",

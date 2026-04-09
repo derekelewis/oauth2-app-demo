@@ -1,19 +1,20 @@
 # OAuth2 App Demo
 
-A monorepo demonstrating OAuth2 Authorization Code Flow with PKCE across three components:
+A monorepo demonstrating OAuth2 Authorization Code Flow with PKCE across four components:
 
 - **iOS App** — Swift 6 / SwiftUI client using `ASWebAuthenticationSession`
+- **React Frontend** — React 19 / TypeScript SPA with manual PKCE implementation
 - **FastAPI Backend** — Python resource server validating JWTs via JWKS
 - **Keycloak** — Identity Provider running in Docker
 
 ## Architecture
 
 ```
-iOS App                          Keycloak (IdP)                 FastAPI (Resource Server)
+Client (iOS / Web)               Keycloak (IdP)                 FastAPI (Resource Server)
   │                                  │                                │
-  ├─ ASWebAuthenticationSession ────►│ /auth (login page)             │
+  ├─ Redirect / ASWebAuth ──────────►│ /auth (login page)             │
   │                                  │                                │
-  │◄── oauth2appdemo://callback?code=│                                │
+  │◄── callback?code= ──────────────│                                │
   │                                  │                                │
   ├─ POST /token (code + verifier) ─►│                                │
   │◄── access_token, refresh_token ──│                                │
@@ -27,6 +28,7 @@ iOS App                          Keycloak (IdP)                 FastAPI (Resourc
 ## Prerequisites
 
 - Docker & Docker Compose
+- Node.js 22+ (for frontend development)
 - Xcode 16.2+ (for iOS Simulator)
 - Python 3.12+ (for local backend development)
 
@@ -53,7 +55,21 @@ chmod +x scripts/test-api.sh
 ./scripts/test-api.sh
 ```
 
-### 3. Run the iOS App
+### 3. Run the React Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open http://localhost:5173, click "Sign In", and log in with the demo credentials.
+
+> **Note:** If Keycloak was already running before adding the web redirect URI, you need to either:
+> - Run `docker compose down -v && docker compose up -d` to re-import the realm, or
+> - Manually add `http://localhost:5173/callback` as a valid redirect URI in the Keycloak Admin Console (Clients > oauth2-demo-app > Valid redirect URIs).
+
+### 4. Run the iOS App
 
 Open the Xcode project:
 ```bash
@@ -102,10 +118,11 @@ KEYCLOAK_URL=http://localhost:8080 uvicorn app.main:app --reload --port 8000
 
 ```
 ├── ios/                    # iOS app (Swift 6 / SwiftUI)
+├── frontend/               # React 19 web app (Vite + TypeScript)
 ├── backend/                # FastAPI resource server
 ├── keycloak/               # Realm export for auto-import
 ├── scripts/                # Test scripts
-└── docker-compose.yml      # Keycloak + Postgres + Backend
+└── docker-compose.yml      # Keycloak + Postgres + Backend + Frontend
 ```
 
 ## Running Tests

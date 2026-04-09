@@ -22,6 +22,10 @@ DerivedData/
 # macOS
 .DS_Store
 
+# Node
+node_modules/
+frontend/dist/
+
 # Docker
 docker-compose.override.yml
 
